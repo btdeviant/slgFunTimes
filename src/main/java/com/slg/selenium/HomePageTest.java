@@ -1,9 +1,13 @@
 package com.slg.selenium;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+
+import java.util.List;
 
 public class HomePageTest {
 
@@ -12,24 +16,39 @@ public class HomePageTest {
      **/
 
 
-    private String slgHome = "http://superleague.com";
-    private String slgTitle = "Homepage - Super League Gaming";
+    private String slgTitle = "Super League Gaming: Homepage";
+    private String googleURL = "http://google.com";
+    private String googleSearchBarLocator = "lst-ib";
+    private String slgGoogleSearchString = "Super League Gaming";
 
 
-    private void driverProperties() {
+    public void driverProperties() {
         System.setProperty("webdriver.chrome.driver", "/Users/brandon/Downloads/chromedriver");
+
     }
+
 
     @Test
-    public void assertHomeTitle() {
+    public void assertSLGTopOfGoogleSearch() {
         driverProperties();
         WebDriver driver = new ChromeDriver();
-        driver.get(slgHome);
-        String title = driver.getTitle();
-        Assert.assertEquals("Current Page Title", slgTitle, title);
-        driver.quit();
+        System.out.print("Navigate to: " + googleURL + "\n");
+        driver.get(googleURL);
+        System.out.print("Sending keys: " + slgGoogleSearchString + "\n");
+        driver.findElement(By.id(googleSearchBarLocator)).sendKeys(slgGoogleSearchString);
+        driver.findElement(By.id(googleSearchBarLocator)).sendKeys(Keys.ENTER);
+        System.out.print("Creating list of result titles" + "\n");
+
+        List<WebElement> resultTitleList = ((ChromeDriver) driver).findElementsByClassName("r");
+        System.out.print("Checking to see if " + slgTitle + " is the first element in the list." + "\n");
+
+        if (!resultTitleList.isEmpty() && resultTitleList.get(0).getText().contains(slgTitle)) {
+            System.out.println(slgTitle + " is at the top of the list" + "\n");
+            driver.close();
+        } else {
+            System.out.println(slgTitle + " is not at the top of the search results. Check your SEO!");
+            driver.close();
+        }
     }
-
-
-
 }
+
